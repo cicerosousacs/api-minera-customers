@@ -1,0 +1,49 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  first_name: MyString
+  last_name: MyString
+  email: MyString
+  password_digest: MyString
+  gender: MyString
+  cpf: MyString
+  cnpj: MyString
+  phone: MyString
+  cellphone: MyString
+  birth_date: 2024-03-20
+  cep: MyString
+  street: MyString
+  number: 1
+  complement: MyString
+  reference: MyString
+  district: MyString
+  city: MyString
+  state: MyString
+  authenticated_email: false
+  status: one
+  subscription: one
+  quantity_profiles: 1
+
+two:
+  first_name: MyString
+  last_name: MyString
+  email: MyString
+  password_digest: MyString
+  gender: MyString
+  cpf: MyString
+  cnpj: MyString
+  phone: MyString
+  cellphone: MyString
+  birth_date: 2024-03-20
+  cep: MyString
+  street: MyString
+  number: 1
+  complement: MyString
+  reference: MyString
+  district: MyString
+  city: MyString
+  state: MyString
+  authenticated_email: false
+  status: two
+  subscription: two
+  quantity_profiles: 1

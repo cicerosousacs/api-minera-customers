@@ -1,0 +1,2 @@
+class TypeSubscription < ApplicationRecord
+end
