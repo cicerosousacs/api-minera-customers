@@ -5,6 +5,11 @@ Rails.application.routes.draw do
       delete 'auth/sign_out'
       put 'auth/:customer_type/:id/change_password', to: 'auth#change_password'
 
+      get 'customer_user/list'
+      get 'customer_user/new'
+      get 'customer_user/update'
+      get 'customer_user/delete'
+      
       get 'customer/list'
       post 'customer/new'
       put 'customer/update'

@@ -23,10 +23,10 @@ class Api::V1::AuthController < ApplicationController
   def change_password
     if @customer.authenticate(params[:current_password])
       if params[:customer_type] == 'Custumer'
-        Customer.change_password(params[:current_password], params[:new_password], @user)
+        Customer.change_password(params[:current_password], params[:new_password], @customer)
         render json: { status: 200, message: "Senha alterada com sucesso!" }, status: :ok, content_type: 'application/json'
       else
-        CustomerUser.change_password(params[:current_password], params[:new_password], @user)
+        CustomerUser.change_password(params[:current_password], params[:new_password], @customer)
         render json: { status: 200, message: "Senha alterada com sucesso!" }, status: :ok, content_type: 'application/json'
       end
     else

@@ -1,6 +1,7 @@
 class Api::V1::CustomerController < ApplicationController
   before_action :authenticated?
-  
+  before_action :set_customer, only: [:update, :show, :delete]
+
   def list
     render json: {status: 200, message: 'Clientes listados com sucesso!', data: Customer.all}, status: :ok
   end
@@ -24,6 +25,10 @@ class Api::V1::CustomerController < ApplicationController
   end
 
   private
+
+  def set_customer
+    @customer = Customer.find(params[:id])
+  end
 
   def customer_params
     params.permit(:first_name, :last_name, :email, :password, :status_id, :subscription_id)

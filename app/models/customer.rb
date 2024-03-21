@@ -27,7 +27,7 @@ class Customer < ApplicationRecord
     raise 'Usuário não encontrado!' if customer.blank?
     raise 'Senha atual incorreta!' unless customer.authenticate(old_password)
 
-    customer.password_digest = new_password
+    customer.password = new_password
     customer.save!
 
     customer
