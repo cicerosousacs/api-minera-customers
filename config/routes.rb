@@ -1,6 +1,15 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  namespace :api do
+    namespace :v1 do
+      post 'auth/sign_in'
+      delete 'auth/sign_out'
+      put 'auth/:customer_type/:id/change_password', to: 'auth#change_password'
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+      get 'customer/list'
+      post 'customer/new'
+      put 'customer/update'
+      get 'customer/show'
+      get 'customer/delete'
+    end
+  end
 end

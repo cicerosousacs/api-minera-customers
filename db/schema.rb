@@ -72,7 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_20_214810) do
   create_table "subscriptions", force: :cascade do |t|
     t.string "description"
     t.bigint "type_subscription_id", null: false
-    t.integer "quantity_profiles"
+    t.integer "quantity_users"
     t.integer "quantity_companies"
     t.float "price"
     t.datetime "created_at", null: false
