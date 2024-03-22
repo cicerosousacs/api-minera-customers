@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_20_214810) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_21_015643) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,6 +53,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_20_214810) do
     t.datetime "updated_at", null: false
     t.index ["status_id"], name: "index_customers_on_status_id"
     t.index ["subscription_id"], name: "index_customers_on_subscription_id"
+  end
+
+  create_table "histories", force: :cascade do |t|
+    t.string "type_history"
+    t.datetime "date_history"
+    t.string "name_list"
+    t.string "observation"
+    t.jsonb "filters"
+    t.integer "customer_user_id"
+    t.integer "customer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sessions", force: :cascade do |t|
