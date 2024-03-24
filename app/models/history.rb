@@ -1,27 +1,44 @@
 class History < ApplicationRecord
-  HistoryObj = Struct.new(:id, :date_history, :name_history, :observation, :filters, :filters_params)
+  HistoryObj = Struct.new(:id, :date_history, :name_list, :observation, :filters, :filters_params)
 
   def self.save_history(params)
-    count_history = where('name_history like ?', "Lista Nº%").count
+    count_history = where('name_list like ?', "Lista Nº%").count
     history = History.new
     history.type_history = params[:query]
     history.date_history = Time.now
+    history.name_list = params[:name].present? ? params[:name] : "Lista Nº #{count_history + 1}"
     history.observation = params[:observation]
-    history.name_history = params[:name].present? ? params[:name] : "Lista Nº #{count_history + 1}"
     history.filters = params.to_json
-    history.user_id = ''
+    history.customer_user_id = ''
+    history.customer_id = ''
     history
   end
   
   def self.list
-    history = order('id desc')
+    history = where(customer_id: 1).order('id desc')
+    # history = history.order('id desc')
     mount_history(history)
+  end
+
+  def self.mount_history(history_query)
+    filter = []
+    history_query.each do |historic|
+      data = HistoryObj.new
+      data.id = historic.id
+      data.date_history = (historic.date_history - (3 * 60 * 60)).strftime("%d/%m/%Y às %H:%M:%S")
+      data.name_list = historic.name_list
+      data.observation = historic.observation
+      data.filters = mount_filter(historic.filters)
+      data.filters_params = JSON.parse(historic.filters)
+      filter << data
+    end
+    filter
   end
 
   def self.mount_filter(filter)
     fil = JSON.parse(filter)
     # Remove os pares chave-valor em que o valor é nulo
-    fil.reject! { |key, value| key == "name" || key == "observation" || key == "query" || key == 'controller' || value.nil? || value.empty? || value == 'search_uniq' || value == 'search'}
+    fil.reject! { |key, value| key == "name" || key == "observation" || key == "query" || key == 'controller' || value.nil? || value.empty? || value == 'search_uniq' || value == 'search' || value == 'true'}
     # Mapeia os nomes das chaves para os nomes desejados
     nome_das_chaves = {
       "cnpj" => 'CNPJ',
@@ -39,7 +56,8 @@ class History < ApplicationRecord
       "initial_date" => "Data Início",
       "end_date" => "Data Final",
       "initial_share_capital" => "Capital Social Inicial",
-      "end_share_capital" => "Capital Social Final"
+      "end_share_capital" => "Capital Social Final",
+      "quantity" => "Leads",
     }
     # Cria a string com os valores não nulos
     string = fil.map { |key, value| "#{nome_das_chaves[key]}: #{format_value(key, value)}" }.join(", ")
@@ -52,7 +70,7 @@ class History < ApplicationRecord
     when 'primary_cnae_code'
       value.gsub(/,/, ', ')
     when 'county_code'
-      County.find_by_code(value).description
+      Connection.find_county(value)
     when *%w[simple_option mei_option email]
       value == 'S' ? 'Sim' : 'Não'
     when *%w[initial_date end_date]
@@ -60,7 +78,7 @@ class History < ApplicationRecord
     when *%w[initial_share_capital end_share_capital]
       Money.new(value, "BRL").format(unit: "R$", separator: ",", delimiter: ".", format: "%u %n")
     when 'company_size_code'
-      CompanySize.find_by_code(value).description
+      Connection.find_company_size(value)
     else
       value
     end

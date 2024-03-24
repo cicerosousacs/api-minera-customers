@@ -1,0 +1,58 @@
+################### API MINERA USERS ##########################
+
+rails new api-minera-customers --api -d postgresql
+
+rails g model TypeSubscription code:string description:string
+rails g model Status code:string description:string
+
+rails g model Subscription description:string type_subscription:references quantity_profiles:integer quantity_companies:integer price:float
+rails g model CustomerUser first_name:string last_name:string email:string password_digest:string customer:references active:boolean
+rails g model Customer first_name:string last_name:string email:string password_digest:string gender:string cpf:string cnpj:string phone:string cellphone:string birth_date:date cep:string street:string number:integer complement:string reference:string district:string city:string state:string authenticated_email:boolean status:references subscription:references quantity_profiles:integer
+
+rails g model History type_history:string date_history:datetime name_list:string observation:string quantity:integer filters:jsonb customer_user_id:integer customer_id:integer
+rails g controller Api::V1::History index
+
+rails g model Admin name:string email:string password_digest:string active:boolean
+
+rails g controller Api::V1::Admin index new update delete
+rails g controller Api::V1::History index
+rails g controller Api::V1::Customer list new update show delete
+rails g controller Api::V1::CustomerUser list new update show delete
+
+rails g controller Api::V1::Auth sign_in sign_out change_password
+rails g model Session key:string email:string
+
+rails g controller Api::V1::Select cnaes company_size municipality_from_uf district_from_municipality
+rails g controller Api::V1::Search search
+
+rails g controller Api::V1::Export export_to_xlsx
+
+rails g model CompaniesByCustomers customer_id:integer quantity_company_references:integer quantity_company:integer quantity_company_remaining:integer
+
+t.string :nome, :length => 255
+t.string :sobrenome, :length => 60
+t.string :email, unique: true
+t.string :sexo, :length => 1
+t.string :cpf, :length => 11
+t.string :cnpj, :length => 14
+t.string :telefone, :length => 13
+t.string :celular, :length => 13
+t.date :data_nascimento
+t.string :cep, :length => 8
+t.string :rua, :length => 255
+t.integer :numero
+t.string :complemento, :length => 255
+t.string :referencia, :length => 255
+t.string :bairro, :length => 120
+t.string :cidade, :length => 60
+t.string :estado, :length => 2
+t.boolean :email_autenticado
+t.references :status_user, references: :status_user, foreign_key: true
+t.string :password_digest, :length => 60
+t.string :id_documento_alfresco, :length => 2
+t.string :id_comprovante_res_alfresco, :length => 36
+t.string :forgot_password_token, :length => 20
+t.datetime :forgot_password_sent_at
+
+
+
