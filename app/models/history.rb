@@ -10,13 +10,14 @@ class History < ApplicationRecord
     history.observation = params[:observation]
     history.filters = params.to_json
     history.customer_user_id = ''
-    history.customer_id = ''
+    history.customer_id = params[:customer_id]
     history
   end
   
-  def self.list
-    history = where(customer_id: 1).order('id desc')
-    # history = history.order('id desc')
+  def self.list(customer_id)
+    history = where(customer_id: customer_id).order('id desc')
+
+    return [] if history.empty?
     mount_history(history)
   end
 
@@ -38,7 +39,10 @@ class History < ApplicationRecord
   def self.mount_filter(filter)
     fil = JSON.parse(filter)
     # Remove os pares chave-valor em que o valor é nulo
-    fil.reject! { |key, value| key == "name" || key == "observation" || key == "query" || key == 'controller' || value.nil? || value.empty? || value == 'search_uniq' || value == 'search' || value == 'true'}
+    fil.reject! { |key, value| 
+      ["name", "observation", "query", "controller", "customer_id"].include?(key) || 
+      ["historic", "result", "true"].include?(value) || value.nil? || value.empty?
+    }
     # Mapeia os nomes das chaves para os nomes desejados
     nome_das_chaves = {
       "cnpj" => 'CNPJ',

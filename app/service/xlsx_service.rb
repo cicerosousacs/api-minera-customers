@@ -40,7 +40,7 @@ class XlsxService
       worksheet.write(i, 2, re['email'])
       worksheet.write(i, 3, '')
       worksheet.write(i, 4, '')
-      worksheet.write(i, 5, Date.strptime(re['date_status_registration'], "%Y%m%d").strftime("%d/%m/%Y"), format_col)
+      worksheet.write(i, 5, re['date_status_registration'] == '0' ? '-' : Date.strptime(re['date_status_registration'], "%Y%m%d").strftime("%d/%m/%Y"), format_col)
       worksheet.write(i, 6, re['registration_situation'], format_col)
       i += 1
     end

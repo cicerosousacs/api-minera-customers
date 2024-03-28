@@ -1,15 +1,16 @@
 class SearchService
   def self.search(query)
     begin
-      response = RestClient.get("#{url_minera_data}/search", params: query)
-    rescue RestClient::ExceptionWithResponse => e
-      raise Error::BadValueError.new("Ocorreu um erro entre a comunicação dos sistemas. Erro: "+ e.message)
+      # response = RestClient.get("#{url_minera_data}/search", params: query, timeout: 2000, open_timeout: 2000, headers: { Authorization: bearer })
+      response = RestClient.get("#{url_minera_data}/search", params: query, timeout: 2000, open_timeout: 2000)
+    rescue RestClient::ExceptionWithResponse => error
+      raise ("Ocorreu um erro entre a comunicação dos sistemas. Erro: "+ error.message)
     end
 
-    raise Error::BadValueError.new("Tivemos problemas ao realizar sua consulta. Tente novamente mais tarde.")  unless response.code == 200
+    raise ("Tivemos problemas ao realizar sua consulta. Tente novamente mais tarde.")  unless response.code == 200
 
     body = JSON.parse(response.body)
-    raise Error::BadValueError.new("#{body.erro}") if response.code != 200
+    raise ("#{body.erro}") if response.code != 200
 
     return body['total_query'], body['data']
   end

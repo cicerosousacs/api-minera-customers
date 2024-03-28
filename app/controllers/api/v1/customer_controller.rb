@@ -1,6 +1,6 @@
 class Api::V1::CustomerController < ApplicationController
-  before_action :authenticated?
-  before_action :set_customer, only: [:update, :show, :delete]
+  before_action :authenticated?, except: [:new]
+  before_action :set_customer, only: [:update, :show, :delete, :leads_remaining]
 
   def list
     render json: {status: 200, message: 'Clientes listados com sucesso!', data: Customer.all}, status: :ok
@@ -8,10 +8,13 @@ class Api::V1::CustomerController < ApplicationController
 
   def new
     begin
-      user = Customer.new_customer(customer_params)
-      render json: { status: 201, message: "Criado com sucesso", data: user }, status: :created, content_type: 'application/json'
+      customer = Customer.new_customer(customer_params)
+      if customer
+        CompaniesByCustomer.save_companies_by_customer(customer.id)
+      end
+      render json: { status: 201, message: "Criado com sucesso", data: customer }, status: :created, content_type: 'application/json'
     rescue StandardError => e
-      render json: { status: 400, message: e.message, data: e.message }, status: :bad_request, content_type: 'application/json'
+      render json: { status: 400, message: e.message, data: [] }, status: :bad_request, content_type: 'application/json'
     end
   end
 
@@ -24,9 +27,18 @@ class Api::V1::CustomerController < ApplicationController
   def delete
   end
 
+  def leads_remaining
+    begin
+      render json: { status: 200, message: 'Leads listados com sucesso!', data: CompaniesByCustomer.by_customer(@customer.id) }, status: :ok
+    rescue StandardError => e
+      render json: { status: 400, message: e.message, data: [] }, status: :bad_request, content_type: 'application/json'
+    end
+  end
+
   private
 
   def set_customer
+    byebug
     @customer = Customer.find(params[:id])
   end
 

@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_21_015643) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_24_144238) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "companies_by_customers", force: :cascade do |t|
+    t.integer "customer_id"
+    t.integer "quantity_company"
+    t.integer "quantity_company_references"
+    t.integer "quantity_company_remaining"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "customer_users", force: :cascade do |t|
     t.string "first_name"

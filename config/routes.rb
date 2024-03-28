@@ -11,17 +11,19 @@ Rails.application.routes.draw do
       post 'auth/sign_in'
       delete 'auth/sign_out'
       put 'auth/:customer_type/:id/change_password', to: 'auth#change_password'
-
-      get 'customer_user/list'
-      get 'customer_user/new'
-      get 'customer_user/update'
-      get 'customer_user/delete'
-      
+    
       get 'customer/list'
       post 'customer/new'
       put 'customer/update'
       get 'customer/show'
       get 'customer/delete'
+      get 'customer/leads_remaining'
+
+      get 'customer_user/list'
+      get 'customer_user/:id', to: 'customer_user#edit'
+      post 'customer_user/new'
+      patch 'customer_user/:id', to: 'customer_user#update'
+      put 'customer_user/enable_disable'
     end
   end
 end
