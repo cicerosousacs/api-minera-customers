@@ -25,7 +25,7 @@ class Api::V1::CustomerUserController < ApplicationController
 
   def update
     begin
-      customer_user = CustomerUser.update_customer_user(@customer_user, params)
+      customer_user = CustomerUser.update_customer_user(@customer_user, customer_user_update_params)
       render json: { status: 200, message: 'Usuário atualizado com sucesso!', data: customer_user }, status: :ok
     rescue StandardError => e
       render json: { status: 400, message: e.message, data: [] }, status: :bad_request

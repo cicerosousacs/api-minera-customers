@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       get 'customer/list'
       post 'customer/new'
       put 'customer/update'
-      get 'customer/show'
+      get 'customer/:id', to: 'customer#show'
       get 'customer/delete'
       get 'customer/leads_remaining'
 

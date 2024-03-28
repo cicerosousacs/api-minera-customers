@@ -1,5 +1,5 @@
 class Api::V1::CustomerController < ApplicationController
-  before_action :authenticated?, except: [:new]
+  # before_action :authenticated?, except: [:new]
   before_action :set_customer, only: [:update, :show, :delete, :leads_remaining]
 
   def list
@@ -22,6 +22,11 @@ class Api::V1::CustomerController < ApplicationController
   end
 
   def show
+    begin
+      render json: { status: 200, message: 'Cliente carregado com sucesso!', data: @customer }, status: :ok, content_type: 'application/json'
+    rescue StandardError => e
+      render json: { status: 400, message: e.message, data: [] }, status: :bad_request, content_type: 'application/json'
+    end
   end
 
   def delete
@@ -38,7 +43,6 @@ class Api::V1::CustomerController < ApplicationController
   private
 
   def set_customer
-    byebug
     @customer = Customer.find(params[:id])
   end
 

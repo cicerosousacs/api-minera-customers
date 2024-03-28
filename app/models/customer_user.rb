@@ -23,7 +23,7 @@ class CustomerUser < ApplicationRecord
     customer_user.first_name = params[:first_name]
     customer_user.last_name = params[:last_name]
     customer_user.email = params[:email]
-    # customer_user.password = params[:password]
+    customer_user.password = params[:password] if params[:password].present?
     customer_user.save!
 
     customer_user
