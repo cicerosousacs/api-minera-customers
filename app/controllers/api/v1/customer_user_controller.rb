@@ -1,6 +1,6 @@
 class Api::V1::CustomerUserController < ApplicationController
+  before_action :authenticated?
   before_action :set_customer_user, only: [:update, :edit]
-
 
   def list
     render json: {status: 200, message: 'Usuários do Cliente listado com sucesso!', data: CustomerUser.by_customer(list_params[:id])}, status: :ok
@@ -36,6 +36,15 @@ class Api::V1::CustomerUserController < ApplicationController
     begin
       customer_user = CustomerUser.enable_disable(customer_user_status_params[:customer_user_id], customer_user_status_params[:status])
       render json: { status: 200, message: 'Status alterado com sucesso!', data: customer_user }, status: :ok
+    rescue StandardError => e
+      render json: { status: 400, message: e.message, data: [] }, status: :bad_request
+    end
+  end
+
+  def select_customer_users
+    begin
+      select = CustomerUser.select_customer_users(list_params[:id])
+      render json: { status: 200, message: 'Select de Cliente carregado com sucesso!', data: select }, status: :ok
     rescue StandardError => e
       render json: { status: 400, message: e.message, data: [] }, status: :bad_request
     end

@@ -1,4 +1,6 @@
 class Api::V1::SelectController < ApplicationController
+  before_action :authenticated?
+
   def cnaes
     cnaes = Connection.cnaes_list
     render json: {status: 200, message: "Lista de CNAEs carregada com sucesso", data: cnaes}

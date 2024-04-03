@@ -20,9 +20,9 @@ class Api::V1::AuthController < ApplicationController
     end
   end
 
-  def change_password
+  def change_password #123Mud@r
     if @customer.authenticate(params[:current_password])
-      if params[:customer_type] == 'Custumer'
+      if params[:customer_type] == 'Customer'
         Customer.change_password(params[:current_password], params[:new_password], @customer)
         render json: { status: 200, message: "Senha alterada com sucesso!" }, status: :ok, content_type: 'application/json'
       else
@@ -30,7 +30,7 @@ class Api::V1::AuthController < ApplicationController
         render json: { status: 200, message: "Senha alterada com sucesso!" }, status: :ok, content_type: 'application/json'
       end
     else
-      render json: { error: 'A Senha atual não confere!' }, status: :unprocessable_entity
+      render json: { status: 400, message: 'A Senha atual não confere!' }, status: :unprocessable_entity
     end
   end
 
@@ -45,6 +45,6 @@ class Api::V1::AuthController < ApplicationController
   end
 
   def change_password_params
-    params.permit(:email, :password, :new_password)
+    params.permit(:current_password, :new_password, :confirm_password)
   end
 end

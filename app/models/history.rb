@@ -1,5 +1,5 @@
 class History < ApplicationRecord
-  HistoryObj = Struct.new(:id, :date_history, :name_list, :observation, :filters, :filters_params)
+  HistoryObj = Struct.new(:id, :date_history, :hour_history, :name_list, :observation, :filters, :filters_params, :customer_user_id)
 
   def self.save_history(params)
     count_history = where('name_list like ?', "Lista Nº%").count
@@ -9,13 +9,19 @@ class History < ApplicationRecord
     history.name_list = params[:name].present? ? params[:name] : "Lista Nº #{count_history + 1}"
     history.observation = params[:observation]
     history.filters = params.to_json
-    history.customer_user_id = ''
-    history.customer_id = params[:customer_id]
+    history.customer_user_id = params[:customer_id] if params[:customer_type] == 'CustomerUser'
+    history.customer_id = params[:customer_type] == 'CustomerUser' ? CustomerUser.find(params[:customer_id]).customer_id : params[:customer_id]
+    history.save!
+    
     history
   end
   
-  def self.list(customer_id)
-    history = where(customer_id: customer_id).order('id desc')
+  def self.list(params)
+    if params[:type] == 'Customer'
+      history = where(customer_id: params[:id]).order('id desc')
+    else
+      history = where(customer_user_id: params[:id]).order('id desc')
+    end
 
     return [] if history.empty?
     mount_history(history)
@@ -23,14 +29,16 @@ class History < ApplicationRecord
 
   def self.mount_history(history_query)
     filter = []
-    history_query.each do |historic|
+    history_query.each do |history|
       data = HistoryObj.new
-      data.id = historic.id
-      data.date_history = (historic.date_history - (3 * 60 * 60)).strftime("%d/%m/%Y às %H:%M:%S")
-      data.name_list = historic.name_list
-      data.observation = historic.observation
-      data.filters = mount_filter(historic.filters)
-      data.filters_params = JSON.parse(historic.filters)
+      data.id = history.id
+      data.date_history = (history.date_history - (3 * 60 * 60)).strftime("%Y-%m-%d")
+      data.hour_history = (history.date_history - (3 * 60 * 60)).strftime("%H:%M:%S")
+      data.name_list = history.name_list
+      data.observation = history.observation
+      data.filters = mount_filter(history.filters)
+      data.filters_params = JSON.parse(history.filters)
+      data.customer_user_id = history.customer_user_id
       filter << data
     end
     filter
@@ -41,7 +49,8 @@ class History < ApplicationRecord
     # Remove os pares chave-valor em que o valor é nulo
     fil.reject! { |key, value| 
       ["name", "observation", "query", "controller", "customer_id"].include?(key) || 
-      ["historic", "result", "true"].include?(value) || value.nil? || value.empty?
+      ["historic", "result", "true", "Customer", "CustomerUser"].include?(value) || 
+      value.nil? || value.empty?
     }
     # Mapeia os nomes das chaves para os nomes desejados
     nome_das_chaves = {

@@ -1,12 +1,11 @@
 class Session < ApplicationRecord
   def self.new_session(customer)
-    exp = Time.current.to_i + 30.minutes.to_i
-    # byebug
+    exp = Time.current.to_i + 1.hour.to_i
     payload = { 
       user_id: customer[:id],
       user_name: customer[:first_name] + ' ' + customer[:last_name],
       user_type: customer.class.name, 
-      user_subscription: customer.class.name == 'Customer' ? customer.subscription.description : customer.customer.subscription.description,
+      user_subscription: customer.class.name == 'Customer' ? customer.subscription.id : customer.customer.subscription.id,
       exp: exp 
     }
 

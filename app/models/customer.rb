@@ -1,6 +1,7 @@
 class Customer < ApplicationRecord
   belongs_to :status
   belongs_to :subscription
+  has_many :customer_users
   
   has_secure_password
 
@@ -56,6 +57,30 @@ class Customer < ApplicationRecord
     customer.subscription_id = subscription
     customer.save!
 
+    customer
+  end
+
+  def self.update_customer(params, customer)
+    raise 'Usuário não informado!' if customer.blank?
+
+    customer = find_by(email: customer[:email])
+    raise 'Usuário não encontrado!' if customer.blank?
+
+    customer.first_name = params[:first_name] if params[:first_name].present?
+    customer.last_name = params[:last_name] if params[:last_name].present?
+    customer.phone = params[:email] if params[:email].present?
+    customer.cellphone = params[:cellphone] if params[:cellphone].present?
+    customer.cep = params[:cep] if params[:cep].present?
+    customer.street = params[:street] if params[:street].present?
+    customer.number = params[:number] if params[:number].present?
+    customer.complement = params[:complement] if params[:complement].present?
+    customer.reference = params[:reference] if params[:reference].present?
+    customer.district = params[:district] if params[:district].present?
+    customer.city = params[:city] if params[:city].present?
+    customer.state = params[:state] if params[:state].present?
+    customer.subscription_id = params[:subscription_id] if params[:subscription_id].present?
+    customer.save!
+    
     customer
   end
 end

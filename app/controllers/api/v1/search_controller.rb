@@ -34,6 +34,7 @@ class Api::V1::SearchController < ApplicationController
     sanitized_params = {}
   
     keys_to_check.each do |key|
+      
       sanitized_params[key] = params[key] == "undefined" || params[key] == "null" ? '' : params[key]
     end
   
@@ -48,8 +49,8 @@ class Api::V1::SearchController < ApplicationController
 
   def check_search_params(params)
     required_params = %i[
-      company_size_code primary_cnae_code uf county_code district ddd simple_option 
-      mei_option email initial_date end_date initial_share_capital end_share_capital customer_id
+      generate_list quantity cnpj fantasy_name company_name share_capital company_size_code primary_cnae_code uf county_code 
+      district ddd simple_option mei_option email initial_date end_date initial_share_capital end_share_capital type customer_id
     ]
   
     if required_params.none? { |param| params[param].present? }
