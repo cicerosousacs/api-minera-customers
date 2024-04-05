@@ -29,6 +29,8 @@ rails g controller Api::V1::Export export_to_xlsx
 
 rails g model CompaniesByCustomers customer_id:integer quantity_company:integer quantity_company_references:integer quantity_company_remaining:integer
 
+rails g controller Api::V1::Subscription list
+
 t.string :nome, :length => 255
 t.string :sobrenome, :length => 60
 t.string :email, unique: true
