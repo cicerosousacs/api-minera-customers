@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_24_144238) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_07_004130) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -60,6 +60,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_24_144238) do
     t.integer "quantity_profiles"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "forgot_password_token"
+    t.datetime "forgot_password_sent_at"
     t.index ["status_id"], name: "index_customers_on_status_id"
     t.index ["subscription_id"], name: "index_customers_on_subscription_id"
   end
@@ -95,7 +97,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_24_144238) do
     t.bigint "type_subscription_id", null: false
     t.integer "quantity_users"
     t.integer "quantity_companies"
-    t.float "price"
+    t.decimal "price", precision: 14, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["type_subscription_id"], name: "index_subscriptions_on_type_subscription_id"

@@ -2,7 +2,7 @@ class CustomerUser < ApplicationRecord
   has_secure_password
   belongs_to :customer
 
-  scope :by_customer, ->(customer_id) { where(customer_id: customer_id).order('id desc') }
+  scope :by_customer, ->(customer_id) { where(customer_id: customer_id).order('active desc') }
 
   def self.new_customer_user(params)
     customer_user = CustomerUser.new

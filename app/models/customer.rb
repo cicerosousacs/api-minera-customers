@@ -83,4 +83,66 @@ class Customer < ApplicationRecord
     
     customer
   end
+
+  def self.validation_generate_token(email)
+    raise 'E-mail não informado!' if email.blank?
+    
+    customer = find_by(email: email)
+    validate_customer(customer, email)
+    generate_password_token!(customer)
+  end
+
+  def self.validate_customer(customer, email)
+    
+    raise 'E-mail inválido!' unless email =~ URI::MailTo::EMAIL_REGEXP
+    raise 'E-mail não foi encontrado! Verifique o e-mail passado e tente novamente.' if customer.blank?
+  end
+
+  def self.generate_password_token!(customer)
+    customer.forgot_password_token = generate_token
+    customer.forgot_password_sent_at = Time.now.utc
+    customer.save!
+    SendMailJob.perform_now(customer.first_name, customer.email, customer.forgot_password_token)
+  end
+
+  def self.generate_token
+    SecureRandom.hex(10)
+  end
+
+  # def self.send_reset_password_instructions
+  #   raise 'E-mail não informado!' if email.blank?
+  #   raise 'Token não informado!' if reset_password_token.blank?
+
+  #   CustomerMailer.reset_password_instructions(self).deliver_now!
+  # end
+
+  def self.reset_password(email, password, token)
+    customer = find_by_email(email)
+
+    raise 'Usuário não foi encontrado. Verifique o e-mail passado e tente novamente.' unless customer.present?
+    raise 'Para alterar a senha é preciso fazer uma solicitação primeiro.' if customer.forgot_password_token.blank?
+    raise 'O token para alteração da senha não é válido.' unless customer.forgot_password_token != token
+    raise 'A solicitação de alteração de senha está expirada. Realize uma nova solicitação de senha.' if customer.password_token_valid?
+
+    customer.authenticated_email = true
+    customer.password = password
+    customer.forgot_password_token = nil
+    customer.forgot_password_sent_at = nil
+    customer.save!
+  end
+
+  def password_token_valid?
+    (self.forgot_password_sent_at + 2.hours) > Time.now.utc
+  end
+
+  # def self.destroy_customer(customer)
+  #   raise 'Usuário não informado!' if customer.blank?
+
+  #   customer = find_by(email: customer[:email])
+  #   raise 'Usuário não encontrado!' if customer.blank?
+
+  #   customer.destroy
+
+  #   customer
+  # end
 end

@@ -1,2 +1,3 @@
 development:
+  minera_front: 'http://localhost:3001'
   minera_data: 'http://localhost:3000'
