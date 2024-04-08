@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_07_004130) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_08_170208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_07_004130) do
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "temp_password"
+    t.datetime "temp_password_sent_at"
     t.index ["customer_id"], name: "index_customer_users_on_customer_id"
   end
 

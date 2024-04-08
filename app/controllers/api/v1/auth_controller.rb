@@ -36,15 +36,9 @@ class Api::V1::AuthController < ApplicationController
 
   def forgot_password
     Customer.validation_generate_token(forgot_password_params[:email])
-    # byebug
     render json: { status: 200, message: "Email enviado para #{forgot_password_params[:email]}." }, status: :ok, content_type: 'application/json'
-    # customer = Customer.find_by(email: change_password_params[:email])
-    # if customer
-    #   customer.send_reset_password_instructions
-    #   render json: { status: 200, message: "E-mail enviado com sucesso!" }, status: :ok, content_type: 'application/json'
-    # else
-    #   render json: { status: 400, message: 'E-mail não encontrado!' }, status: :unprocessable_entity
-    # end
+  rescue StandardError => e
+    render json: { status: 400, message: e.message }, status: :unprocessable_entity
   end
 
   def reset_password

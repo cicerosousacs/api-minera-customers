@@ -6,6 +6,7 @@ class Session < ApplicationRecord
       user_name: customer[:first_name] + ' ' + customer[:last_name],
       user_type: customer.class.name, 
       user_subscription: customer.class.name == 'Customer' ? customer.subscription.id : customer.customer.subscription.id,
+      password_type: customer.class.name == 'CustomerUser' && customer.temp_password.present? ? 'temp_password' : 'password',
       exp: exp 
     }
 

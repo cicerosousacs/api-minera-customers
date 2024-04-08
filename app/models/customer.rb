@@ -80,6 +80,8 @@ class Customer < ApplicationRecord
     customer.state = params[:state] if params[:state].present?
     customer.subscription_id = params[:subscription_id] if params[:subscription_id].present?
     customer.save!
+
+    SendMailJob.perform_now(customer.first_name, customer.email, 'new_customer')
     
     customer
   end
@@ -99,22 +101,20 @@ class Customer < ApplicationRecord
   end
 
   def self.generate_password_token!(customer)
-    customer.forgot_password_token = generate_token
+    exp = Time.current.to_i + 30.minutes.to_i
+    payload = {
+      exp: exp
+    }
+    customer.forgot_password_token = generate_token(payload)
     customer.forgot_password_sent_at = Time.now.utc
     customer.save!
-    SendMailJob.perform_now(customer.first_name, customer.email, customer.forgot_password_token)
+
+    SendMailJob.perform_now(customer.first_name, customer.email, customer.forgot_password_token, 'forgot_password')
   end
 
-  def self.generate_token
-    SecureRandom.hex(10)
+  def self.generate_token(payload)
+    JWT.encode payload, Rails.application.secrets.secret_key_base, 'HS256'
   end
-
-  # def self.send_reset_password_instructions
-  #   raise 'E-mail não informado!' if email.blank?
-  #   raise 'Token não informado!' if reset_password_token.blank?
-
-  #   CustomerMailer.reset_password_instructions(self).deliver_now!
-  # end
 
   def self.reset_password(email, password, token)
     customer = find_by_email(email)
@@ -122,9 +122,9 @@ class Customer < ApplicationRecord
     raise 'Usuário não foi encontrado. Verifique o e-mail passado e tente novamente.' unless customer.present?
     raise 'Para alterar a senha é preciso fazer uma solicitação primeiro.' if customer.forgot_password_token.blank?
     raise 'O token para alteração da senha não é válido.' unless customer.forgot_password_token != token
-    raise 'A solicitação de alteração de senha está expirada. Realize uma nova solicitação de senha.' if customer.password_token_valid?
+    raise 'Este link expirou. Clique novamente em esqueceu senha para gerar um novo link de recuperação.' if customer.password_token_valid?
 
-    customer.authenticated_email = true
+    # customer.authenticated_email = true
     customer.password = password
     customer.forgot_password_token = nil
     customer.forgot_password_sent_at = nil
@@ -132,7 +132,7 @@ class Customer < ApplicationRecord
   end
 
   def password_token_valid?
-    (self.forgot_password_sent_at + 2.hours) > Time.now.utc
+    (self.forgot_password_sent_at + 30.minutes ) > Time.now.utc
   end
 
   # def self.destroy_customer(customer)

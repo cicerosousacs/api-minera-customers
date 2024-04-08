@@ -61,11 +61,11 @@ class Api::V1::CustomerUserController < ApplicationController
   end
 
   def customer_user_params
-    params.permit(:first_name, :last_name, :email, :password, :customer_id)
+    params.permit(:first_name, :last_name, :email, :customer_id)
   end
 
   def customer_user_update_params
-    params.permit(:first_name, :last_name, :email, :password)
+    params.permit(:first_name, :last_name, :email)
   end
 
   def customer_user_status_params
