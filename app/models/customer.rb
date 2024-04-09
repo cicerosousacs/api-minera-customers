@@ -103,7 +103,8 @@ class Customer < ApplicationRecord
   def self.generate_password_token!(customer)
     exp = Time.current.to_i + 30.minutes.to_i
     payload = {
-      exp: exp
+      exp: exp,
+      customer_id: customer.id
     }
     customer.forgot_password_token = generate_token(payload)
     customer.forgot_password_sent_at = Time.now.utc
@@ -112,37 +113,33 @@ class Customer < ApplicationRecord
     SendMailJob.perform_now(customer.first_name, customer.email, customer.forgot_password_token, 'forgot_password')
   end
 
-  def self.generate_token(payload)
-    JWT.encode payload, Rails.application.secrets.secret_key_base, 'HS256'
-  end
-
-  def self.reset_password(email, password, token)
-    customer = find_by_email(email)
+  def self.reset_password(params)
+    decoded_token = decode_token(params[:token])
+    customer = find(decoded_token[0]['customer_id'])
 
     raise 'Usuário não foi encontrado. Verifique o e-mail passado e tente novamente.' unless customer.present?
+    raise 'As senhas não conferem.' unless params[:newPassword] == params[:confirmPassword]
     raise 'Para alterar a senha é preciso fazer uma solicitação primeiro.' if customer.forgot_password_token.blank?
-    raise 'O token para alteração da senha não é válido.' unless customer.forgot_password_token != token
     raise 'Este link expirou. Clique novamente em esqueceu senha para gerar um novo link de recuperação.' if customer.password_token_valid?
 
     # customer.authenticated_email = true
-    customer.password = password
+    customer.password = params[:newPassword]
     customer.forgot_password_token = nil
     customer.forgot_password_sent_at = nil
     customer.save!
   end
 
   def password_token_valid?
-    (self.forgot_password_sent_at + 30.minutes ) > Time.now.utc
+    Time.now > (self.forgot_password_sent_at + 30.minutes )
   end
 
-  # def self.destroy_customer(customer)
-  #   raise 'Usuário não informado!' if customer.blank?
+  private
 
-  #   customer = find_by(email: customer[:email])
-  #   raise 'Usuário não encontrado!' if customer.blank?
+  def self.generate_token(payload)
+    JWT.encode payload, Rails.application.secrets.secret_key_base, 'HS256'
+  end
 
-  #   customer.destroy
-
-  #   customer
-  # end
+  def self.decode_token(token)
+    JWT.decode token, Rails.application.secrets.secret_key_base, true, { algorithm: 'HS256' }
+  end
 end

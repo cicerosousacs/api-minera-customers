@@ -5,7 +5,7 @@ Rails.application.routes.draw do
       delete 'auth/sign_out'
       put 'auth/:customer_type/:id/change_password', to: 'auth#change_password'
       post 'auth/forgot_password'
-      get 'auth/reset_password'
+      post 'auth/reset_password'
       
       get 'export/export_to_xlsx'
       

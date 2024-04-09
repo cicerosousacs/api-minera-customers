@@ -42,7 +42,11 @@ class Api::V1::AuthController < ApplicationController
   end
 
   def reset_password
-    byebug
+    Customer.reset_password(reset_password_params)
+    # byebug
+    render json: { status: 200, message: "Senha alterada com sucesso!" }, status: :ok, content_type: 'application/json'
+  rescue StandardError => e
+    render json: { status: 400, message: e.message }, status: :unprocessable_entity
   end
 
   private
@@ -61,5 +65,9 @@ class Api::V1::AuthController < ApplicationController
 
   def forgot_password_params
     params.permit(:email)
+  end
+
+  def reset_password_params
+    params.permit(:email, :newPassword, :confirmPassword, :token)
   end
 end

@@ -3,7 +3,7 @@ class SendMail < ApplicationMailer
 
   def forgot_password(name, email, token)
     @name = name
-    @url = "#{Figaro.env.minera_front}/nova_senha?token=#{token}"
+    @link = "#{Figaro.env.minera_front}/nova_senha?token=#{token}"
     mail(to: email, subject: 'Recuperação de senha')
   end
 

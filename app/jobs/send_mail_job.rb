@@ -12,16 +12,3 @@ class SendMailJob < ApplicationJob
     end
   end
 end
-
-
-# def forgot_password_perform(*args)
-#   SendMail.forgot_password(args.first, args.second, args.third).deliver_now!
-# end
-
-# def new_customer_perform(*args)
-#   SendMail.new_customer(args.first, args.second).deliver_now!
-# end
-
-# def new_customer_user_perform(*args)
-#   SendMail.new_customer_user(args.first, args.second, args.third).deliver_now!
-# end
