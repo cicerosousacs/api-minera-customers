@@ -18,7 +18,7 @@ module ApiMineraCustomers
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-    config.i18n.default_locale = :'pt-BR'
+    # config.i18n.default_locale = :'pt-BR'
     config.time_zone = 'America/Fortaleza'
     config.active_record.default_timezone = :utc
     # Only loads a smaller set of middleware suitable for API only apps.
