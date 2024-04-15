@@ -15,7 +15,6 @@ Rails.application.routes.draw do
       get 'select/cnaes'
       get 'select/company_size'
       get 'select/municipality_from_uf'
-      get 'select/district_from_municipality'
       
       get 'customer/list'
       post 'customer/new'

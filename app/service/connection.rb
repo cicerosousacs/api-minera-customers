@@ -35,18 +35,6 @@ class Connection
     body['data']
   end
 
-  def self.district_from_municipality(uf)
-    begin
-      response = RestClient.get("#{url_minera_data}/district_from_municipality", params: {municipality_code: uf})
-    rescue RestClient::ExceptionWithResponse => e
-      raise Error::BadValueError.new("Ocorreu um erro entre a comunicação dos sistemas. Erro: "+ e.message)
-    end
-    raise Error::BadValueError.new("Tivemos problemas ao carregar a lista de Bairros do Municipio.")  unless response.blank? || response.code == 200
-    body = JSON.parse(response.body)
-    raise Error::BadValueError.new("#{body.erro}") if response.code != 200
-    body['data']
-  end
-
   def self.find_county(code)
     begin
       response = RestClient.get("#{url_minera_data}/county/county_description", params: {county_code: code})
